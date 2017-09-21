@@ -1,0 +1,19 @@
+h4{
+    text-align: center;
+    line-height: 0.5;
+}
+table {
+    border-collapse: collapse;
+    width: auto;
+    margin-left: auto;
+    margin-right: auto;
+}
+td{
+    padding: 3px;
+}
+th{
+    padding: 4px;
+}
+.firstcol{
+    border-left: none;
+}

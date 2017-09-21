@@ -1,0 +1,20 @@
+<?php
+	$server="localhost";
+	$username="root";
+	$password="root";
+	$dbname = "employeDb";
+	$conn = new mysqli($server, $username, $password,$dbname);
+
+	if ($conn->connect_error) {
+	    		//die("Connection failed: " . $conn->connect_error);
+
+	else
+		echo"database is connected";
+	/*$qry=$conn->query("SELECT Year from TimeTable");
+	if ($qry->num_rows > 0) {
+    	while($row = $qry->fetch_assoc()) 
+    	{
+  			echo"year".$row["Year"];
+    	}
+    }*/
+?>

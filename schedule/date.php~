@@ -1,0 +1,18 @@
+
+<!DOCTYPE html>
+<html>
+<body>
+<?php
+$timestamp = strtotime('2009-10-24');
+
+$day = date('D', $timestamp);
+echo $day."\n";
+if(strpos("3,4,5,1", "4,5"))
+	echo"<br>it cintains 4,5";
+else
+	echo"no";
+?>
+&copy; 2010-<?php echo date("yyyy");?>
+
+</body>
+</html>

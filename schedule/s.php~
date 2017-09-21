@@ -1,0 +1,27 @@
+<html>
+<head>
+	<title>Sample</title>
+</head>
+<body>
+	<h1>Sample Test for database connection</h1>
+<?php
+	$server="localhost";
+	$username="root";
+	$password="";
+	$dbname = "employeDb";
+	$conn = new mysqli($server, $username, $password,$dbname);
+
+	if ($conn->connect_error) {
+	    		die("Connection failed: " . $conn->connect_error);
+
+	$qry=$conn->query("SELECT Year from TimeTable");
+	if ($qry->num_rows > 0) {
+    	while($row = $qry->fetch_assoc()) 
+    	{
+  			echo"year".$row["Year"]."<br>";
+    	}
+    }
+	$conn->close();
+?>
+</body>
+</html>
