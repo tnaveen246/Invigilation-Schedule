@@ -3,6 +3,20 @@
 <head>
     <title>Table</title>
     <link rel="stylesheet" type="text/css" href="dates.css">
+    <style type="text/css">
+        a{
+            background-color:#5ce3f2;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            color: white;
+            margin-top:3%;
+            float: right;
+        }
+        a:hover{
+            background-color: #23d6ea;
+        }
+    </style>
 </head>
 <body>
 <?php
@@ -11,6 +25,7 @@
     $password="";
     $dbname = "employeedb";
     $conn = new mysqli($server, $username, $password,$dbname);
+
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
@@ -66,22 +81,32 @@
             $etime=date("h:i A",strtotime($etime));
         }
 
-        $qry=$conn->query("DELETE from details");
-        if($conn->query("INSERT INTO `details` VALUES ('$year', '$sem', '$type', '$mid', '$time', '$btime', '$etime', '$days')")===true){}
-        else
-            echo "Error: <br>" . $conn->error;
+        $qry=$conn->query("SELECT number from createdtables");
 
-        // echo "year :" .$year." sem : ".$sem." exam type : ".$type." days : ".$days." time : ".$time." exam time".$etime." Befoe time:".$btime." mid:".$mid;
-        echo "<form action='checkBoxTable.php' method='post'>";
-        echo "<table>";
+        while($n=$qry->fetch_assoc())
+            $num=$n['number'];
+        //$conn->query("update CreatedTables  set number=".$num1." where sno=1");
+        $detailsdbconn = new mysqli('localhost', 'root','','datesanddetailsdb');
+
+        $detailsdbconn->query("CREATE table detailstable".$num."(year varchar(2),sem varchar(2),type varchar(2),mid varchar(2),time varchar(15),btime varchar(15),etime varchar(15),days int(2))");
+        
+        $detailsdbconn->query("DELETE FROM detailstable".$num);
+        
+        if($detailsdbconn->query("INSERT INTO detailstable".$num." VALUES ('$year', '$sem', '$type', '$mid', '$time', '$btime', '$etime', '$days')")===true){}
+        else
+            echo "Error: <br>" . $detailsdbconn->error;
+
+        echo "<div class='tab col-md-6'><form action='checkBoxTable.php' method='post'>";
+        echo "<table class='col-md-6table'>";
         $j=1;
         for($i=100;$i<$days+100;$i++)
             echo "<tr><td>Select day ".$j++."</td><td><input type='date' name='$i' required/></td></tr>";
         echo "<table>";
         echo "<input type='submit' name='Listofdates' id='button' >";
-        echo "</form>";
+        echo "</form></div>";
     }
 
 ?>
+<a href="index.php">Home</a>
 </body>
 </html>

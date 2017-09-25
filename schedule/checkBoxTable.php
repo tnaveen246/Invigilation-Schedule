@@ -2,7 +2,24 @@
 <html>
 <head>
     <title>Table</title>
-    <link rel="stylesheet" type="text/css" href="stylesheet.css">
+    <!-- <link rel="stylesheet" type="text/css" href="stylesheet.css"> -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style type="text/css">
+        table{
+            font-size: 15px;
+        }
+        body{
+            text-align: center;
+            margin: 5%;
+        }
+    </style>
 </head>
 <body>
 <?php
@@ -12,43 +29,51 @@
     $password="";
     $dbname = "employeedb";
     $conn = new mysqli($server, $username, $password,$dbname);
+    $detailsdbconn = new mysqli('localhost', 'root','','datesanddetailsdb');
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
+    $qry=$conn->query("SELECT number from CreatedTables");
+    while($n=$qry->fetch_assoc())
+        $num=$n['number'];
 
-        $qry=$conn->query("SELECT days from details");
-        if ($qry->num_rows > 0) {
+        $qry=$detailsdbconn->query("SELECT days from detailstable".$num);
+        if($qry->num_rows > 0) {
             while($row = $qry->fetch_assoc()) 
             {
                 $days=$row['days'];
             }
         }
-        $qry=$conn->query("DELETE from dates");
+
+        $qry=$detailsdbconn->query("CREATE TABLE datestable".$num."(dates varchar(15))");
+
+        $detailsdbconn->query("DELETE FROM datestable".$num);
 
         for($i=100;$i<$days+100;$i++){
             $date=$_POST[$i];
-            $qry=$conn->query("INSERT into dates VALUES('$date')");
+            $qry=$detailsdbconn->query("INSERT into datesTable".$num." VALUES('$date')");
         }
 
         $sno=1;
     	$Array=array();
         $num_days=0;
-        echo "<table border='1'><tr><th>S.NO</th><th>NAME OF THE FACULTY</th><th>DEPT</th>";
-        $datesQuery=$conn->query("SELECT * FROM dates");
+        echo "<table class='table' border='1'><tr><th>S.NO</th><th>NAME OF THE FACULTY</th><th>DEPT</th>";
+
+        $datesQuery=$detailsdbconn->query("SELECT * FROM datestable".$num);
 
         if ($datesQuery->num_rows > 0) {
             while($d = $datesQuery->fetch_assoc()) {
-                $timeStamp=strtotime($d["date"]);
+                $timeStamp=strtotime($d["dates"]);
                 $weaklydays=date('D',$timeStamp);
                 $Array[$num_days++]=$weaklydays;
-                echo "<th>".$d["date"]."<br>(".$Array[$num_days-1].")</th>";
+                echo "<th>".$d["dates"]."<br>(".$Array[$num_days-1].")</th>";
             }
             echo "</tr>";
         }
 
         echo "<form action='Invigilation.php' method='post'>";
 
-        $details=$conn->query("SELECT year,time,etime FROM details");
+        $details=$detailsdbconn->query("SELECT * FROM detailsTable".$num);
         if($details->num_rows>0){
             while ($row = $details->fetch_assoc()) {
                 $time=$row['time'];
@@ -109,7 +134,7 @@
                 break;
             }
         }
-        $qry=$conn->query("SELECT * from TimeTable where Year Like '%".$year."%'");
+        $qry=$conn->query("SELECT * from timetable where Year Like '%".$year."%'");
 
         if ($qry->num_rows > 0) {
             
@@ -136,9 +161,12 @@
                 }
         	}
             echo "</table>";
-            echo "<input type='submit' name='Print' value='$c'></form>";
+            echo "<div id='btn'><input type='submit' name='Print' value='$c'></div></form>";
 
         }
 ?>
+<ul class="pager">
+    <li><a href="index.php">Home</a></li>
+</ul>
 </body>
 </html>
